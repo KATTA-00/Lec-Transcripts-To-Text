@@ -7,6 +7,34 @@ import whisper
 import sys
 import os
 
+
+def format_timestamp(seconds):
+    """Format seconds to timestamp string"""
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    secs = int(seconds % 60)
+    millis = int((seconds % 1) * 1000)
+    return f"{hours:02d}:{minutes:02d}:{secs:02d}.{millis:03d}"
+
+
+def write_vtt(segments, file):
+    """Write segments to VTT format"""
+    print("WEBVTT\n", file=file)
+    for segment in segments:
+        start = format_timestamp(segment['start'])
+        end = format_timestamp(segment['end'])
+        text = segment['text'].strip()
+        print(f"{start} --> {end}\n{text}\n", file=file)
+
+
+def write_srt(segments, file):
+    """Write segments to SRT format"""
+    for i, segment in enumerate(segments, start=1):
+        start = format_timestamp(segment['start']).replace('.', ',')
+        end = format_timestamp(segment['end']).replace('.', ',')
+        text = segment['text'].strip()
+        print(f"{i}\n{start} --> {end}\n{text}\n", file=file)
+
 def transcribe_single_video(video_path, output_dir, model_size="medium"):
     """
     Transcribe a single video and save outputs to specified directory
@@ -38,13 +66,13 @@ def transcribe_single_video(video_path, output_dir, model_size="medium"):
         # Save as VTT
         vtt_file = os.path.join(output_dir, f"{video_name}.vtt")
         with open(vtt_file, "w", encoding="utf-8") as f:
-            whisper.utils.write_vtt(result["segments"], file=f)
+            write_vtt(result["segments"], f)
         print(f"✓ VTT saved: {vtt_file}")
         
         # Save as SRT
         srt_file = os.path.join(output_dir, f"{video_name}.srt")
         with open(srt_file, "w", encoding="utf-8") as f:
-            whisper.utils.write_srt(result["segments"], file=f)
+            write_srt(result["segments"], f)
         print(f"✓ SRT saved: {srt_file}")
         
         # Save as JSON

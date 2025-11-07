@@ -7,6 +7,34 @@ import whisper
 import os
 import sys
 
+
+def format_timestamp(seconds):
+    """Format seconds to timestamp string"""
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    secs = int(seconds % 60)
+    millis = int((seconds % 1) * 1000)
+    return f"{hours:02d}:{minutes:02d}:{secs:02d}.{millis:03d}"
+
+
+def write_vtt(segments, file):
+    """Write segments to VTT format"""
+    print("WEBVTT\n", file=file)
+    for segment in segments:
+        start = format_timestamp(segment['start'])
+        end = format_timestamp(segment['end'])
+        text = segment['text'].strip()
+        print(f"{start} --> {end}\n{text}\n", file=file)
+
+
+def write_srt(segments, file):
+    """Write segments to SRT format"""
+    for i, segment in enumerate(segments, start=1):
+        start = format_timestamp(segment['start']).replace('.', ',')
+        end = format_timestamp(segment['end']).replace('.', ',')
+        text = segment['text'].strip()
+        print(f"{i}\n{start} --> {end}\n{text}\n", file=file)
+
 def transcribe_video(video_path, model_size="medium", output_format="txt"):
     """
     Transcribe a video file using Whisper
@@ -48,13 +76,15 @@ def transcribe_video(video_path, model_size="medium", output_format="txt"):
         # Save as VTT (Web Video Text Tracks)
         if output_format in ["vtt", "all"]:
             vtt_file = f"{base_name}_transcript.vtt"
-            whisper.utils.write_vtt(result["segments"], file=open(vtt_file, "w", encoding="utf-8"))
+            with open(vtt_file, "w", encoding="utf-8") as f:
+                write_vtt(result["segments"], f)
             print(f"✓ VTT file saved: {vtt_file}")
         
         # Save as SRT (SubRip)
         if output_format in ["srt", "all"]:
             srt_file = f"{base_name}_transcript.srt"
-            whisper.utils.write_srt(result["segments"], file=open(srt_file, "w", encoding="utf-8"))
+            with open(srt_file, "w", encoding="utf-8") as f:
+                write_srt(result["segments"], f)
             print(f"✓ SRT file saved: {srt_file}")
         
         # Save full JSON output
