@@ -57,30 +57,30 @@ def transcribe_single_video(video_path, output_dir, model_size="large"):
         # Transcribe the video
         result = model.transcribe(video_path)
         
-        # Save as plain text
-        txt_file = os.path.join(output_dir, f"{video_name}.txt")
+        # Save as plain text transcript
+        txt_file = os.path.join(output_dir, f"{video_name}_transcript.txt")
         with open(txt_file, "w", encoding="utf-8") as f:
             f.write(result["text"])
-        print(f"✓ Text saved: {txt_file}")
+        print(f"✓ Text transcript saved: {txt_file}")
         
-        # Save as VTT
-        vtt_file = os.path.join(output_dir, f"{video_name}.vtt")
+        # Save VTT content as .txt file
+        vtt_file = os.path.join(output_dir, f"{video_name}_vtt.txt")
         with open(vtt_file, "w", encoding="utf-8") as f:
             write_vtt(result["segments"], f)
-        print(f"✓ VTT saved: {vtt_file}")
+        print(f"✓ VTT content saved: {vtt_file}")
         
-        # Save as SRT
-        srt_file = os.path.join(output_dir, f"{video_name}.srt")
+        # Save SRT content as .txt file
+        srt_file = os.path.join(output_dir, f"{video_name}_srt.txt")
         with open(srt_file, "w", encoding="utf-8") as f:
             write_srt(result["segments"], f)
-        print(f"✓ SRT saved: {srt_file}")
+        print(f"✓ SRT content saved: {srt_file}")
         
-        # Save as JSON
+        # Save JSON content as .txt file
         import json
-        json_file = os.path.join(output_dir, f"{video_name}.json")
+        json_file = os.path.join(output_dir, f"{video_name}_json.txt")
         with open(json_file, "w", encoding="utf-8") as f:
             json.dump(result, f, indent=2, ensure_ascii=False)
-        print(f"✓ JSON saved: {json_file}")
+        print(f"✓ JSON content saved: {json_file}")
         
         print(f"\n✅ Transcription complete for: {video_name}")
         return True

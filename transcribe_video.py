@@ -73,27 +73,27 @@ def transcribe_video(video_path, model_size="medium", output_format="txt"):
                 f.write(result["text"])
             print(f"\n✓ Text transcript saved: {txt_file}")
         
-        # Save as VTT (Web Video Text Tracks)
+        # Save VTT content as .txt file
         if output_format in ["vtt", "all"]:
-            vtt_file = f"{base_name}_transcript.vtt"
+            vtt_file = f"{base_name}_vtt.txt"
             with open(vtt_file, "w", encoding="utf-8") as f:
                 write_vtt(result["segments"], f)
-            print(f"✓ VTT file saved: {vtt_file}")
+            print(f"✓ VTT content saved: {vtt_file}")
         
-        # Save as SRT (SubRip)
+        # Save SRT content as .txt file
         if output_format in ["srt", "all"]:
-            srt_file = f"{base_name}_transcript.srt"
+            srt_file = f"{base_name}_srt.txt"
             with open(srt_file, "w", encoding="utf-8") as f:
                 write_srt(result["segments"], f)
-            print(f"✓ SRT file saved: {srt_file}")
+            print(f"✓ SRT content saved: {srt_file}")
         
-        # Save full JSON output
+        # Save JSON content as .txt file
         if output_format in ["json", "all"]:
             import json
-            json_file = f"{base_name}_transcript.json"
+            json_file = f"{base_name}_json.txt"
             with open(json_file, "w", encoding="utf-8") as f:
                 json.dump(result, f, indent=2, ensure_ascii=False)
-            print(f"✓ JSON file saved: {json_file}")
+            print(f"✓ JSON content saved: {json_file}")
         
         print(f"\n✅ Transcription complete!")
         print(f"\nPreview of transcript:")
