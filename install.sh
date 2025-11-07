@@ -109,7 +109,8 @@ pip install ffmpeg-python numpy torch
 echo ""
 echo "9. Installing Sumy for summarization..."
 pip install sumy nltk
-python -c "import nltk; nltk.download('punkt', quiet=True)"
+echo "Downloading NLTK data..."
+python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
 echo "✓ Sumy installed"
 
 # Verify installations

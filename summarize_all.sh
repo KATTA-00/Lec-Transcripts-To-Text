@@ -51,10 +51,16 @@ echo "Checking for Sumy package..."
 if ! python -c "import sumy" 2>/dev/null; then
     echo "Installing Sumy..."
     pip install sumy nltk
-    python -c "import nltk; nltk.download('punkt')"
+    echo "Downloading NLTK data..."
+    python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
     echo "✓ Sumy installed"
 else
     echo "✓ Sumy already installed"
+    # Check if NLTK data is available
+    if ! python -c "import nltk; nltk.data.find('tokenizers/punkt_tab')" 2>/dev/null; then
+        echo "Downloading missing NLTK data..."
+        python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
+    fi
 fi
 
 echo ""
