@@ -49,6 +49,7 @@ cookies.txt
 # Video and Transcript Folders
 videos/
 transcripts/
+summaries/
 
 # Video Files (large files)
 *.mp4

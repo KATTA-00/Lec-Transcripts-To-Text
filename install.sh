@@ -106,9 +106,15 @@ echo ""
 echo "8. Installing additional dependencies..."
 pip install ffmpeg-python numpy torch
 
+echo ""
+echo "9. Installing Sumy for summarization..."
+pip install sumy nltk
+python -c "import nltk; nltk.download('punkt', quiet=True)"
+echo "✓ Sumy installed"
+
 # Verify installations
 echo ""
-echo "9. Verifying installations..."
+echo "10. Verifying installations..."
 if python -c "import whisper" 2>/dev/null; then
     echo "   ✓ Whisper installed successfully"
 else
@@ -119,7 +125,7 @@ fi
 
 # Create activation helper script
 echo ""
-echo "10. Creating helper scripts..."
+echo "11. Creating helper scripts..."
 cat > activate_env.sh << 'EOF'
 #!/bin/bash
 # Helper script to activate the virtual environment
