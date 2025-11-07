@@ -1,5 +1,6 @@
 # Installation Script for Video Transcription
 # Run this script on Windows/PowerShell
+# This script creates a virtual environment to avoid system package conflicts
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "Video Transcription Setup Script" -ForegroundColor Cyan
@@ -46,37 +47,74 @@ try {
     }
 }
 
+# Create virtual environment
+Write-Host ""
+Write-Host "3. Creating virtual environment..." -ForegroundColor Yellow
+$venvDir = "venv"
+if (Test-Path $venvDir) {
+    Write-Host "   ✓ Virtual environment already exists" -ForegroundColor Green
+} else {
+    Write-Host "   Creating new virtual environment..." -ForegroundColor Yellow
+    python -m venv $venvDir
+    Write-Host "   ✓ Virtual environment created" -ForegroundColor Green
+}
+
+# Activate virtual environment
+Write-Host ""
+Write-Host "4. Activating virtual environment..." -ForegroundColor Yellow
+& ".\venv\Scripts\Activate.ps1"
+Write-Host "   ✓ Virtual environment activated" -ForegroundColor Green
+
 # Upgrade pip
 Write-Host ""
-Write-Host "3. Upgrading pip..." -ForegroundColor Yellow
+Write-Host "5. Upgrading pip..." -ForegroundColor Yellow
 python -m pip install --upgrade pip
 
 # Install Python packages
 Write-Host ""
-Write-Host "4. Installing OpenAI Whisper..." -ForegroundColor Yellow
+Write-Host "6. Installing OpenAI Whisper..." -ForegroundColor Yellow
 Write-Host "   This may take a few minutes and will download ~1-2GB..." -ForegroundColor Cyan
 pip install git+https://github.com/openai/whisper.git
 
 Write-Host ""
-Write-Host "5. Installing additional dependencies..." -ForegroundColor Yellow
+Write-Host "7. Installing additional dependencies..." -ForegroundColor Yellow
 pip install ffmpeg-python numpy torch
 
 # Verify installations
 Write-Host ""
-Write-Host "6. Verifying installations..." -ForegroundColor Yellow
+Write-Host "8. Verifying installations..." -ForegroundColor Yellow
 try {
-    python -c "import whisper; print('   ✓ Whisper installed successfully')"
+    python -c "import whisper"
     Write-Host "   ✓ Whisper installed successfully" -ForegroundColor Green
 } catch {
     Write-Host "   ✗ Whisper installation failed" -ForegroundColor Red
+    deactivate
     exit 1
 }
+
+# Create activation helper script
+Write-Host ""
+Write-Host "9. Creating helper scripts..." -ForegroundColor Yellow
+$activateScript = @"
+# Helper script to activate the virtual environment
+.\venv\Scripts\Activate.ps1
+Write-Host "Virtual environment activated!" -ForegroundColor Green
+Write-Host "Run: python transcribe_video.py" -ForegroundColor Cyan
+"@
+$activateScript | Out-File -FilePath "activate_env.ps1" -Encoding UTF8
+Write-Host "   ✓ Created activate_env.ps1 helper script" -ForegroundColor Green
+
+deactivate
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
 Write-Host "✓ Installation Complete!" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
-Write-Host "You can now run the transcription script:" -ForegroundColor Cyan
-Write-Host "   python transcribe_video.py" -ForegroundColor White
+Write-Host "To use the transcription script:" -ForegroundColor Cyan
+Write-Host "   1. Activate virtual environment: .\venv\Scripts\Activate.ps1" -ForegroundColor White
+Write-Host "   2. Run transcription: python transcribe_video.py" -ForegroundColor White
+Write-Host "   3. Deactivate when done: deactivate" -ForegroundColor White
+Write-Host ""
+Write-Host "Or simply run: .\activate_env.ps1" -ForegroundColor Yellow
 Write-Host ""

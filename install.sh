@@ -1,6 +1,7 @@
 #!/bin/bash
 # Installation Script for Video Transcription
 # Run this script on Linux/Mac
+# This script creates a virtual environment to avoid system package conflicts
 
 echo "========================================"
 echo "Video Transcription Setup Script"
@@ -13,20 +14,32 @@ if command -v python3 &> /dev/null; then
     PYTHON_VERSION=$(python3 --version)
     echo "   ✓ Python found: $PYTHON_VERSION"
     PYTHON_CMD="python3"
-    PIP_CMD="pip3"
 elif command -v python &> /dev/null; then
     PYTHON_VERSION=$(python --version)
     echo "   ✓ Python found: $PYTHON_VERSION"
     PYTHON_CMD="python"
-    PIP_CMD="pip"
 else
     echo "   ✗ Python not found! Please install Python first."
     exit 1
 fi
 
+# Check for python3-venv on Debian/Ubuntu systems
+echo ""
+echo "2. Checking for venv support..."
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if command -v apt-get &> /dev/null; then
+        if ! $PYTHON_CMD -m venv --help &> /dev/null; then
+            echo "   Installing python3-venv..."
+            sudo apt-get update
+            sudo apt-get install -y python3-venv python3-full
+        fi
+    fi
+fi
+echo "   ✓ Virtual environment support available"
+
 # Check FFmpeg installation
 echo ""
-echo "2. Checking FFmpeg installation..."
+echo "3. Checking FFmpeg installation..."
 if command -v ffmpeg &> /dev/null; then
     FFMPEG_VERSION=$(ffmpeg -version | head -n 1)
     echo "   ✓ FFmpeg found: $FFMPEG_VERSION"
@@ -60,36 +73,74 @@ else
     fi
 fi
 
-# Upgrade pip
+# Create virtual environment
 echo ""
-echo "3. Upgrading pip..."
-$PYTHON_CMD -m pip install --upgrade pip
+echo "4. Creating virtual environment..."
+VENV_DIR="venv"
+if [ -d "$VENV_DIR" ]; then
+    echo "   ✓ Virtual environment already exists"
+else
+    echo "   Creating new virtual environment..."
+    $PYTHON_CMD -m venv $VENV_DIR
+    echo "   ✓ Virtual environment created"
+fi
+
+# Activate virtual environment
+echo ""
+echo "5. Activating virtual environment..."
+source $VENV_DIR/bin/activate
+echo "   ✓ Virtual environment activated"
+
+# Upgrade pip in virtual environment
+echo ""
+echo "6. Upgrading pip..."
+pip install --upgrade pip
 
 # Install Python packages
 echo ""
-echo "4. Installing OpenAI Whisper..."
+echo "7. Installing OpenAI Whisper..."
 echo "   This may take a few minutes and will download ~1-2GB..."
-$PIP_CMD install git+https://github.com/openai/whisper.git
+pip install git+https://github.com/openai/whisper.git
 
 echo ""
-echo "5. Installing additional dependencies..."
-$PIP_CMD install ffmpeg-python numpy torch
+echo "8. Installing additional dependencies..."
+pip install ffmpeg-python numpy torch
 
 # Verify installations
 echo ""
-echo "6. Verifying installations..."
-if $PYTHON_CMD -c "import whisper" 2>/dev/null; then
+echo "9. Verifying installations..."
+if python -c "import whisper" 2>/dev/null; then
     echo "   ✓ Whisper installed successfully"
 else
     echo "   ✗ Whisper installation failed"
+    deactivate
     exit 1
 fi
+
+# Create activation helper script
+echo ""
+echo "10. Creating helper scripts..."
+cat > activate_env.sh << 'EOF'
+#!/bin/bash
+# Helper script to activate the virtual environment
+source venv/bin/activate
+echo "Virtual environment activated!"
+echo "Run: python transcribe_video.py"
+EOF
+chmod +x activate_env.sh
+echo "   ✓ Created activate_env.sh helper script"
+
+deactivate
 
 echo ""
 echo "========================================"
 echo "✓ Installation Complete!"
 echo "========================================"
 echo ""
-echo "You can now run the transcription script:"
-echo "   $PYTHON_CMD transcribe_video.py"
+echo "To use the transcription script:"
+echo "   1. Activate virtual environment: source venv/bin/activate"
+echo "   2. Run transcription: python transcribe_video.py"
+echo "   3. Deactivate when done: deactivate"
+echo ""
+echo "Or simply run: source activate_env.sh"
 echo ""
