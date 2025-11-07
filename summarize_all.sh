@@ -68,31 +68,31 @@ summarized=0
 failed=0
 current=0
 
-for transcript_file in "$TRANSCRIPTS_DIR"/*/"*_transcript.txt"; do
-    if [ -f "$transcript_file" ]; then
-        ((current++))
-        
-        # Get video name from path
-        video_dir=$(dirname "$transcript_file")
-        video_name=$(basename "$video_dir")
-        
-        # Output summary file
-        summary_file="$SUMMARIES_DIR/${video_name}_summary.txt"
-        
-        echo "[$current/$transcript_count] Summarizing: $video_name"
-        
-        # Run Python summarizer
-        python summarize_transcript.py "$transcript_file" "$summary_file" "$SENTENCES_COUNT"
-        
-        if [ $? -eq 0 ]; then
-            ((summarized++))
-            echo "✓ Summary saved: $summary_file"
-        else
-            ((failed++))
-            echo "✗ Failed: $video_name"
-        fi
-        echo ""
+# Find all transcript files
+find "$TRANSCRIPTS_DIR" -type f -name "*_transcript.txt" | while read -r transcript_file; do
+    ((current++))
+    
+    # Get video name from path
+    video_dir=$(dirname "$transcript_file")
+    video_name=$(basename "$video_dir")
+    
+    # Output summary file
+    summary_file="$SUMMARIES_DIR/${video_name}_summary.txt"
+    
+    echo "[$current/$transcript_count] Summarizing: $video_name"
+    echo "   Input: $transcript_file"
+    
+    # Run Python summarizer
+    python summarize_transcript.py "$transcript_file" "$summary_file" "$SENTENCES_COUNT"
+    
+    if [ $? -eq 0 ]; then
+        ((summarized++))
+        echo "✓ Summary saved: $summary_file"
+    else
+        ((failed++))
+        echo "✗ Failed: $video_name"
     fi
+    echo ""
 done
 
 # Deactivate virtual environment
