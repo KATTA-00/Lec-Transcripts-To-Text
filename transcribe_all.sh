@@ -9,7 +9,7 @@ echo ""
 
 VIDEOS_DIR="videos"
 TRANSCRIPTS_DIR="transcripts"
-MODEL_SIZE="medium"  # Options: tiny, base, small, medium, large
+MODEL_SIZE="large"  # Options: tiny, base, small, medium, large
 
 # Check if videos directory exists
 if [ ! -d "$VIDEOS_DIR" ]; then

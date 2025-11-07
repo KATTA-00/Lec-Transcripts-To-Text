@@ -111,7 +111,7 @@ def transcribe_video(video_path, model_size="medium", output_format="txt"):
 if __name__ == "__main__":
     # Configuration
     VIDEO_FILE = "Lecture 1 - Computer Abstractions.mp4"
-    MODEL_SIZE = "medium"  # Options: tiny, base, small, medium, large
+    MODEL_SIZE = "large"  # Options: tiny, base, small, medium, large
     OUTPUT_FORMAT = "all"  # Options: txt, vtt, srt, json, all
     
     print("=" * 60)

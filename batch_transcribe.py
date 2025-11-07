@@ -35,7 +35,7 @@ def write_srt(segments, file):
         text = segment['text'].strip()
         print(f"{i}\n{start} --> {end}\n{text}\n", file=file)
 
-def transcribe_single_video(video_path, output_dir, model_size="medium"):
+def transcribe_single_video(video_path, output_dir, model_size="large"):
     """
     Transcribe a single video and save outputs to specified directory
     
