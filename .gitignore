@@ -43,6 +43,13 @@ venv.bak/
 ~/.cache/whisper/
 .cache/
 
+# Google Drive Authentication
+cookies.txt
+
+# Video and Transcript Folders
+videos/
+transcripts/
+
 # Video Files (large files)
 *.mp4
 *.avi
@@ -57,6 +64,9 @@ venv.bak/
 *_transcript.vtt
 *_transcript.srt
 *_transcript.json
+*.txt
+*.vtt
+*.srt
 
 # Audio Files
 *.mp3
