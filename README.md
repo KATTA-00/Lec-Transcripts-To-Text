@@ -1,93 +1,105 @@
-# Video Transcription with OpenAI Whisper
+# Batch Video Transcription with OpenAI Whisper
 
-This script transcribes the lecture video using OpenAI's Whisper model.
+Automatically transcribe multiple lecture videos using OpenAI's Whisper model.
 
-## Prerequisites
+## 🚀 Quick Start
 
-### 1. Install Python Dependencies
+### 1. Install Dependencies
 
-```powershell
-pip install git+https://github.com/openai/whisper.git
+```bash
+./install.sh
 ```
 
-Or use the requirements file:
+This will:
 
-```powershell
-pip install -r requirements.txt
+- Create a virtual environment
+- Install Whisper and all dependencies
+- Install FFmpeg if needed
+
+### 2. Add Your Videos
+
+```bash
+mkdir videos
+# Copy your video files (.mp4, .avi, .mov, .mkv, .webm) to the videos/ folder
 ```
 
-### 2. Install FFmpeg
+### 3. Transcribe All Videos
 
-**Option A - Using Chocolatey (Recommended for Windows):**
-
-```powershell
-choco install ffmpeg
+```bash
+./transcribe_all.sh
 ```
 
-**Option B - Using Scoop:**
+## 📁 Output Structure
 
-```powershell
-scoop install ffmpeg
+Transcripts are organized in separate folders for each video:
+
+```
+transcripts/
+├── Lecture_01/
+│   ├── Lecture_01.txt      # Plain text transcript
+│   ├── Lecture_01.vtt      # WebVTT with timestamps
+│   ├── Lecture_01.srt      # SubRip subtitles
+│   └── Lecture_01.json     # Full JSON output
+├── Lecture_02/
+│   ├── Lecture_02.txt
+│   ├── Lecture_02.vtt
+│   ├── Lecture_02.srt
+│   └── Lecture_02.json
+└── ... (one folder per video)
 ```
 
-**Option C - Manual Installation:**
+## ⚙️ Configuration
 
-1. Download FFmpeg from https://ffmpeg.org/download.html
-2. Extract the files
-3. Add the `bin` folder to your system PATH
+Edit `transcribe_all.sh` or `batch_transcribe.py` to change:
 
-**Verify installation:**
+**MODEL_SIZE**: Choose accuracy vs speed
 
-```powershell
-ffmpeg -version
+- `tiny` - Fastest, least accurate
+- `base` - Fast, basic accuracy
+- `small` - Good balance
+- `medium` - Better accuracy (default) ✅
+- `large` - Best accuracy, slowest
+
+## 📝 Supported Video Formats
+
+- `.mp4`
+- `.avi`
+- `.mov`
+- `.mkv`
+- `.webm`
+
+## 🔧 Scripts
+
+- **`install.sh`** - One-time setup (creates virtual environment, installs dependencies)
+- **`transcribe_all.sh`** - Transcribe all videos in `videos/` folder
+- **`batch_transcribe.py`** - Core transcription logic (used by shell script)
+- **`transcribe_video.py`** - Single video transcription (legacy)
+
+## 💡 Tips
+
+- First run downloads the Whisper model (~1.5GB for medium)
+- Transcription time: ~10-20 minutes per hour of video (medium model)
+- All processing is local and offline - completely private
+- Can pause and resume - already transcribed videos are skipped
+
+## 🐛 Troubleshooting
+
+**No videos found:**
+
+```bash
+mkdir videos
+# Add your video files to videos/ folder
 ```
 
-## Usage
+**Virtual environment error:**
 
-Simply run the script:
-
-```powershell
-python transcribe_video.py
+```bash
+./install.sh
 ```
 
-The script will automatically:
+**FFmpeg not found:**
 
-- Find the video file `Lecture 1 - Computer Abstractions.mp4`
-- Load the Whisper model (downloads on first run, ~1.5GB for medium model)
-- Transcribe the video
-- Generate multiple output files
-
-## Output Files
-
-The script generates:
-
-- `Lecture 1 - Computer Abstractions_transcript.txt` - Plain text transcript
-- `Lecture 1 - Computer Abstractions_transcript.vtt` - WebVTT with timestamps
-- `Lecture 1 - Computer Abstractions_transcript.srt` - SubRip subtitles
-- `Lecture 1 - Computer Abstractions_transcript.json` - Full JSON output
-
-## Configuration
-
-You can modify these settings in `transcribe_video.py`:
-
-- **MODEL_SIZE**: Choose model accuracy vs speed
-
-  - `tiny` - Fastest, least accurate
-  - `base` - Fast, basic accuracy
-  - `small` - Good balance
-  - `medium` - Better accuracy (default)
-  - `large` - Best accuracy, slowest
-
-- **OUTPUT_FORMAT**: Choose output types
-  - `txt` - Text only
-  - `vtt` - WebVTT only
-  - `srt` - SRT subtitles only
-  - `json` - Full JSON only
-  - `all` - All formats (default)
-
-## Notes
-
-- First run will download the model (~1.5GB for medium)
-- Transcription time varies based on video length and model size
-- Medium model provides a good balance of speed and accuracy
-- All data is processed locally - completely private and offline
+```bash
+sudo apt install ffmpeg  # Linux
+brew install ffmpeg      # Mac
+```
